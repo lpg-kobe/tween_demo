@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+<head></head>
+
+<body>
+    <title> 
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    </title>
+    <style type="text/css">
+        #box {
+            width: 100px;
+            height: 100px;
+            background: green;
+        }
+
+        .container {
+            width: 480px;
+            height: 260px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            background-color: #0a95a5;
+            overflow: hidden;
+        }
+
+        [hidden] {
+            display: none;
+        }
+
+        .fire {
+            position: absolute;
+            right: 50px;
+            bottom: 0;
+            animation: tinyUpDown .5s infinite linear alternate;
+        }
+
+        .rabit {
+            position: absolute;
+            left: 0;
+            bottom: 130px;
+        }
+
+        .rabit-x {
+            width: 175px;
+            position: absolute;
+            bottom: 10px;
+            top: 0;
+            left: -200px;
+        }
+
+        .shadow {
+            position: absolute;
+            width: 80%;
+            height: 20px;
+            background-color: #000;
+            opacity: .2;
+            border-radius: 50%;
+            bottom: 0;
+            left: 10%;
+        }
+
+        @keyframes tinyUpDown {
+            form {
+                transform: translateY(5px);
+            }
+            to {
+                transform: translateY(-5px);
+            }
+        }
+    </style>
+    <!-- <div id="box"></div> -->
+    <!-- <script type="text/javascript" src="./core.js" charset="UTF-8"></script> -->
+    <!-- <script type="text/javascript">
+        const box = document.querySelector('#box');
+        const timeline = new Animation({
+            duration: 3000,
+            value: [[0, 400], [0, 600]],
+            render: function (value1, value2) {
+                box.style.transform = `translate(${value1}px, ${value2}px)`;
+            },
+            timingFunction: 'easeOut'
+        });
+        timeline.play();
+    </script> -->
+    <!--rabbit jumping animation-->
+    <div class="container">
+        <img src="./img/rabbit-die.png" width="175" height="104" hidden="">
+        <img class="fire" src="./img/fire.png" width="60" height="160">
+        <div id="rabitX" class="rabit-x">
+            <i id="shadow" class="shadow"></i>
+            <img id="rabit" class="rabit" src="./img/rabbit.png" width="175" height="104">
+        </div>
+    </div>
+
+    <script src="./tween.js" charset="UTF-8"></script>
+    <script src="./animate.js" charset="UTF-8"></script>
+    <script>
+        var rabitX = document.getElementById('rabitX'),
+            eleRabit = document.getElementById('rabit'),
+            rabit_sha = document.getElementById('shadow');
+        // 兔子容器的水平位置
+        var startX = -200, maxX = 300;
+        // 兔子的垂直位置
+        var startY = 200, maxY = 140, minY = 10;
+        // 投影的透明度和大小
+        var opacityMin = 0; opacityMax = 0.2;
+        var scaleMin = 1; scaleMax = 2;
+
+        var srcRabit = eleRabit.src;
+        var srcRabitDie = srcRabit.replace('.png', '-die.png');
+
+        //水平移动
+        var fnMove = function () {
+            //初始化位置
+            (function _initState() {
+                eleRabit.src = "./img/rabbit.png";
+                rabitX.removeAttribute('style');
+                eleRabit.removeAttribute('style');
+                rabit_sha.removeAttribute('style');
+            })();
+
+            //水平匀速移动
+            Math.animation(startX, maxX, 800, 'Linear', function (value, isEnding) {
+                rabitX.style.left = value + 'px';
+            });
+
+            //加速度下落
+            Math.animation(startY, minY, 500, 'Quad.easeIn', function (value, isEnding) {
+                //设置兔子投影
+                setRabitShar();
+                if (isEnding) {//下落到最底部
+                    //再次弹起
+                    Math.animation(minY, startY, 500, 'Quad.easeOut', function (value, isEnding) {
+                        //设置兔子投影
+                        setRabitShar(value);
+                        if (isEnding) {
+                            //变成烤兔
+                            eleRabit.src = srcRabitDie;
+                            setTimeout(function () {//一秒后再次跳动
+                                fnMove();
+                            }, 1000)
+                        }
+                    })
+                }
+            });
+            //设置兔子投影
+            function setRabitShar(value) {//总变动范围乘以(当前下落距离最低点位置占总体下落距离的比例)
+                eleRabit.style.bottom = value + "px";
+                var sharOpacity = opacityMax - (opacityMax - opacityMin) * (value - minY) / (maxY - minY);
+                var scaleRate = scaleMin + (scaleMax - scaleMin) * (value - minY) / (maxY - minY);
+                rabit_sha.style.opacity = sharOpacity;
+                rabit_sha.style.scale = scaleRate;
+                rabit_sha.style.webkitScale = scaleRate;
+            };
+        };
+        fnMove();
+    </script>
+</body>
+
+</html>
