@@ -66,12 +66,8 @@
 ```
 启动成功提示
  ![Alt text](./img/up-fabric-ok.png)
-
-### 任务二 数据上链及数据链上查询
-
-实验步骤：
-
-1. 创建账本
+ 
+3. 创建账本
 
 ```shell
 ./create-ledger.sh
@@ -79,7 +75,7 @@
 创建成功提示
 ![Alt text](./img/create-ledger.png)
 
-2. 加入账本
+4. 加入账本
 
 ```javascript
 ./join-ledger.sh 0 1 // 在组织1的0节点加入账本
@@ -90,7 +86,7 @@
 加入成功提示
 ![Alt text](./img/join-ledger.png)
 
-3. 安装链码
+5. 安装链码
 
 ```javascript
 ./install.sh 0 1 // 为组织1的0节点安装链码
@@ -101,30 +97,65 @@
 安装成功提示
 ![Alt text](./img/i-chaincode.png)
 
-4. 初始化链码
+6. 初始化链码
 
 ```javascript
 ./init.sh 0 2 OR // 为组织2的0节点初始化链码
 ```
 初始化成功提示
-![Alt text](./img/init-chaincode.png)
+![Alt text](./img/init-chaincode.png) 
 
-### 任务二 编写并发布智能合约，实现通过hash比较的方法，判断数据是否相等
+### 任务二 数据上链及数据链上查询
 
 实验步骤：
 
-1. 部署合约
+1. 数据记录到区块链上
 
 ```javascript
-./invoke.sh key 'name:sjr,age:18' '0,2' // 为组织2的0节点部署{key:key,value:'name:sjr,age:18'}合约
+./invoke.sh key1 'name:sjr,age:18' '0,2' // 将信息'name:sjr,age:18'以key1为关键字，请求组织2的节点0签名并记录到区块链上
+```
+记录成功提示
+![Alt text](./img/upload-common.png)
+
+3. 分别从两个节点上查询数据，如成功则说明区块链分布式账本成功同步
+
+```javascript
+./query.sh key01 0 1 // 查询组织1下的0节点key=key01的合约
+./query.sh key11 1 1 // 查询组织1下的1节点key=key11的合约
+```
+
+### 任务三 编写并发布智能合约，实现通过hash比较的方法，判断数据是否相等
+
+实验步骤：
+
+1. 在原来的智能合约基础上增加compare方法，比较数据是否一致(智能合约相对路径chaincode/traceability/go/agent.go，参考的智能合约相对路径chaincode/traceability_ref/go/agent.go)
+
+2. 将修改后的智能合约发布到联盟区块链网络上
+
+```javascript
+./install.sh 0 1 // 为组织1的0节点安装链码
+./install.sh 1 1 // 为组织1的1节点安装链码
+./install.sh 0 2 // 为组织2的0节点安装链码
+./install.sh 1 2 // 为组织2的1节点安装链码
+./update.sh 0 2 OR // 为组织2的0节点初始化链码
 ```
 部署成功提示
+![Alt text](./img/upload-common.png)
 
-2. 查询部署的合约
+3. 分别从两个节点上查询数据
 
 ```javascript
-./query.sh key 0 2 // 查询组织2下的0节点key=key的合约
+./query.sh key1 0 1 // 查询组织1下的0节点key=key1的数据 data01
+./query.sh key1 0 2 // 查询组织2下的0节点key=key1的数据 data02
 ```
+
+4. 调用新加的智能合约功能，完成数据的比较
+
+```js
+./compare.sh data01 data02 0 2 // 调用组织2的节点0的智能合约比较方法，比较data01和data02是否相等，如不相等则发生了篡改
+```
+对比结果
+![Alt text](./img/compare-equal.png)
 
 *******************************
 .*(END)*
