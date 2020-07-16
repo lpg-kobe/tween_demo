@@ -120,15 +120,27 @@
 3. 分别从两个节点上查询数据，如成功则说明区块链分布式账本成功同步
 
 ```javascript
-./query.sh key01 0 1 // 查询组织1下的0节点key=key01的合约
-./query.sh key11 1 1 // 查询组织1下的1节点key=key11的合约
+./query.sh key1 0 1 // 查询组织1下的0节点key=key1的合约
+./query.sh key1 1 1 // 查询组织1下的1节点key=key1的合约
 ```
 
 ### 任务三 编写并发布智能合约，实现通过hash比较的方法，判断数据是否相等
 
 实验步骤：
 
-1. 在原来的智能合约基础上增加compare方法，比较数据是否一致(智能合约相对路径chaincode/traceability/go/agent.go，参考的智能合约相对路径chaincode/traceability_ref/go/agent.go)
+1. 在原来的智能合约基础上增加compare方法，比较数据是否一致
+
+* 智能合约相对路径chaincode/traceability/go/agent.go
+
+```go
+
+```
+
+* 参考的智能合约相对路径chaincode/traceability_ref/go/agent.go
+
+```go
+
+```
 
 2. 将修改后的智能合约发布到联盟区块链网络上
 
